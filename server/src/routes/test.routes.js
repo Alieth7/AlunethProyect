@@ -1,4 +1,9 @@
 import { Router } from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const testRouter = Router();
 
@@ -46,4 +51,9 @@ testRouter.get("/array-of-elements", (req, res) => {
     },
   ];
   res.json(arrayOfElements);
+});
+
+testRouter.get("/test-image", (req, res) => {
+  const imagePath = path.join(__dirname, "../public/images/img.png");
+  res.sendFile(imagePath);
 });
