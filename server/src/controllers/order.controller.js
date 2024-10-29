@@ -139,9 +139,9 @@ const verifyOrderCode = (code) => {
 
 const getLastOrderNumber = async () => {
   const [[order]] = await pool.query(
-    "SELECT numero_pedido FROM Pedido ORDER BY id DESC LIMIT 1"
+    "SELECT cod_pedido FROM Pedido ORDER BY id DESC LIMIT 1"
   );
-  return order.numero_pedido;
+  return order.cod_pedido;
 };
 
 const insertOrder = async (
@@ -153,7 +153,7 @@ const insertOrder = async (
   userId,
   accountId
 ) => {
-  const query = `INSERT INTO Pedido (numero_pedido, fecha_pedido, fecha_recojo, estado, total, id_persona, id_cuenta) 
+  const query = `INSERT INTO Pedido (cod_pedido, fecha_pedido, fecha_recojo, estado, total, id_persona, id_cuenta) 
   VALUES (?, ?, ?, ?, ?, ?, ?)`;
   const [{ insertId }] = await pool.query(query, [
     orderNumber,

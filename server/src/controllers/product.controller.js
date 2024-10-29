@@ -1,27 +1,22 @@
 import { pool } from "../db/connection.js";
 
 export const createProduct = async (req, res) => {
-  const { codigo_catalogo, precio, personalizado, nombre, especificaciones } =
-    req.body;
-
-  const image = req.file ? req.file.buffer : null;
-
-  if (!codigo_catalogo || !precio || !nombre || !especificaciones) {
-    return res.status(400).json({ error: "Faltan campos requeridos" });
-  }
-
   try {
-    const query =
-      "INSERT INTO Cuaderno (codigo_catalogo,precio, personalizado, nombre, especificaciones, image) VALUES (?,?,?,?,?,?)";
-    const [result] = await pool.query(query, [
+    const { codigo_catalogo, precio, personalizado, nombre, especificaciones } =
+      req.body;
+    const { filename } = req.file;
+
+    const imageUrl = `http://${req.headers.host}/public/cuadernos/${filename}`;
+
+    const sql = `INSERT INTO Cuaderno (codigo_catalogo, precio, personalizado, nombre, especificaciones, image) VALUES (?, ?, ?, ?, ?, ?)`;
+    const [result] = await pool.query(sql, [
       codigo_catalogo,
       precio,
       personalizado,
       nombre,
       especificaciones,
-      image,
+      imageUrl,
     ]);
-
     res.json(result);
   } catch (error) {
     console.error(error);
@@ -52,29 +47,29 @@ export const getCustoms = async (req, res) => {
   }
 };
 
-// Not finished
-export const getImagePerProductId = async (req, res) => {
-  const productId = req.params.productId;
+// In case in a future work
+// export const getImagePerProductId = async (req, res) => {
+//   const productId = req.params.productId;
 
-  if (!productId) {
-    return res.status(422).json({ message: "Campos requeridos" });
-  }
+//   if (!productId) {
+//     return res.status(422).json({ message: "Campos requeridos" });
+//   }
 
-  try {
-    const query = `SELECT image FROM Cuaderno WHERE id = ?`;
-    const [[result]] = await pool.query(query, [productId]);
-    // console.log(result);
-    const image = result.image;
-    res.writeHead(200, { "Content-Type": "image/png" });
-    // res.sendFile(image, "binary");
-    res.send(image);
-  } catch (error) {
-    console.error(error);
-    res
-      .status(500)
-      .json({ error: error ?? error.message ?? "Error de servidor" });
-  }
-};
+//   try {
+//     const query = `SELECT image FROM Cuaderno WHERE id = ?`;
+//     const [[result]] = await pool.query(query, [productId]);
+//     // console.log(result);
+//     const image = result.image;
+//     res.writeHead(200, { "Content-Type": "image/png" });
+//     // res.sendFile(image, "binary");
+//     res.send(image);
+//   } catch (error) {
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ error: error ?? error.message ?? "Error de servidor" });
+//   }
+// };
 
 export const countRepeated = (notebooks) => {
   const times = {};

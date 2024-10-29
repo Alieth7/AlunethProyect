@@ -4,7 +4,7 @@ CREATE DATABASE IF NOT EXISTS AlunethHandmade;
 USE AlunethHandmade;
 
 CREATE TABLE IF NOT EXISTS Persona (
-	id INT NOT NULL AUTO_INCREMENT,
+ id INT NOT NULL AUTO_INCREMENT,
     nombre VARCHAR(30) NOT NULL,
     ci INT NOT NULL UNIQUE,
     apellido VARCHAR(30) NOT NULL,
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS Cuenta (
 );
 
 CREATE TABLE IF NOT EXISTS Pedido (
-	id INT NOT NULL AUTO_INCREMENT,
-    numero_pedido INT NOT NULL UNIQUE,
+ id INT NOT NULL AUTO_INCREMENT,
+    cod_pedido VARCHAR(20) NOT NULL UNIQUE,
     fecha_pedido DATE NOT NULL,
     fecha_recojo DATE NOT NULL,
     estado VARCHAR(30) NOT NULL,
@@ -38,18 +38,18 @@ CREATE TABLE IF NOT EXISTS Pedido (
 );
 
 CREATE TABLE IF NOT EXISTS Cuaderno (
-	id INT NOT NULL AUTO_INCREMENT,
+ id INT NOT NULL AUTO_INCREMENT,
     codigo_catalogo VARCHAR(10) NOT NULL UNIQUE,
     precio FLOAT NOT NULL,
     personalizado BOOLEAN NOT NULL,
     nombre VARCHAR(30) NOT NULL UNIQUE,
     especificaciones VARCHAR(255) NOT NULL,
-    image BLOB NULL,
+    image VARCHAR(255) NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS Pedido_Cuaderno (
-	id INT NOT NULL AUTO_INCREMENT,
+ id INT NOT NULL AUTO_INCREMENT,
     id_pedido INT NOT NULL,
     id_cuaderno INT NOT NULL,
     cantidad INT NOT NULL,
@@ -70,13 +70,14 @@ INSERT INTO Cuenta (nro_cuenta,nombre_usuario, contrasenia, id_persona) VALUES
 
 -- Cuaderno
 -- Se debe insertar solamente desde la API para ingresar la imagen :/
--- INSERT INTO Cuaderno (codigo_catalogo,precio, personalizado, nombre, especificaciones) VALUES 
--- ("CA01",35.0,false,"Cuaderno anillado", "Cuaderno anillado tapa dura de 13, forro negro, hojas blancas, carta");
+INSERT INTO Cuaderno (codigo_catalogo,precio, personalizado, nombre, especificaciones, image) VALUES 
+("CA01",35.0,false,"Cuaderno anillado", "Cuaderno anillado tapa dura de 13, forro negro, hojas blancas, carta", "http://localhost:3000/public/images/1.png"),
+("CA02",35.0,false,"Cuaderno anillado 2", "Cuaderno anillado tapa dura de 134, forro negro, hojas blancas, oficio", "http://localhost:3000/public/images/1.png");
 
 -- Pedido
-INSERT INTO Pedido (numero_pedido, fecha_pedido, fecha_recojo, estado, total, id_persona, id_cuenta) VALUES 
-(1, NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY), 0, 0, 1, 1),
-(2, NOW(), DATE_ADD(NOW(), INTERVAL 5 DAY), 0, 0, 2, 2);
+INSERT INTO Pedido (cod_pedido, fecha_pedido, fecha_recojo, estado, total, id_persona, id_cuenta) VALUES 
+("1", NOW(), DATE_ADD(NOW(), INTERVAL 3 DAY), 0, 0, 1, 1),
+("2", NOW(), DATE_ADD(NOW(), INTERVAL 5 DAY), 0, 0, 2, 2);
 
 -- Pedido_Cuaderno
 INSERT INTO Pedido_Cuaderno (id_pedido,id_cuaderno,cantidad) VALUES (1,1,5);
