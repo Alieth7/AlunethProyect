@@ -34,7 +34,6 @@ export const login = async (req, res) => {
         expiresIn: TOKEN_EXPIRE_IN,
       }
     );
-
     res.status(200).json({
       token,
       username: account.nombre_usuario,
@@ -75,5 +74,58 @@ export const register = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: error.message ?? error ?? "Login failed." });
+  }
+};
+
+export const newRegister = async (req, res) => {
+  const { username, password, name, lastname, ci, phone_number, role } =
+    req.body;
+
+  if (
+    !username ||
+    !password ||
+    !name ||
+    !lastname ||
+    !ci ||
+    !phone_number ||
+    !role
+  ) {
+    res.status(422).json({ message: "Faltan campos requerido" });
+  }
+
+  try {
+    const [personId] = await pool.query(
+      "INSERT INTO Persona (nombre,ci,apellido,nro_celular,rol) VALUES (?,?,?,?,?)",
+      [username, ci, lastname, phone_number, role]
+    );
+
+    if (!personId) {
+      res.status(500).json({ message: "Register failed" });
+    }
+
+    const [[account]] = await pool.query(
+      `SELECT nro_cuenta FROM Cuenta ORDER BY id DESC LIMIT 1`
+    );
+
+    let accountNumber = 1;
+    if (account) {
+      accountNumber = account.nro_cuenta + 1;
+    }
+
+    const query =
+      "INSERT INTO Cuenta (nro_cuenta,nombre_usuario, contrasenia, id_persona) VALUES (?,?,?,?)";
+    const [result] = await pool.query(query, [
+      accountNumber,
+      username,
+      password,
+      personId.insertId,
+    ]);
+    res.status(200).json({
+      message: "Cuenta registrada",
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: error.message ?? error ?? "Register failed." });
   }
 };
